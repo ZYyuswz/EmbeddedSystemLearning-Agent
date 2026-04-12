@@ -11,7 +11,7 @@ from embedded_glossary import GlossaryMatcher
 from embedded_kb import EmbeddedKB
 from llm_client import (
     answer_from_kb_only,
-    chat_completion,
+    chat_completion_stream,
     format_intents_for_ui,
     has_dashscope_key,
     has_deepseek_key,
@@ -169,22 +169,46 @@ def main(is_admin: bool, usname: str) -> None:
 
         status.empty()
 
-        if use_llm:
-            try:
-                last = chat_completion(
-                    prov,
-                    model_name.strip() or default_m,
-                    messages,
-                    timeout=120.0,
-                    max_tokens=2048,
-                )
-            except Exception as e:
-                last = f"**大模型调用失败：** {e}\n\n---\n\n" + answer_from_kb_only(query, hits)
-        else:
-            last = answer_from_kb_only(query, hits)
-
         with st.chat_message("assistant"):
-            st.markdown(last)
+            last = ""
+            if use_llm:
+                try:
+                    acc: list[str] = []
+                    model_id = model_name.strip() or default_m
+
+                    def _answer_stream():
+                        for piece in chat_completion_stream(
+                            prov,
+                            model_id,
+                            messages,
+                            timeout=120.0,
+                            max_tokens=2048,
+                        ):
+                            acc.append(piece)
+                            yield piece
+
+                    if hasattr(st, "write_stream"):
+                        st.write_stream(_answer_stream)
+                        last = "".join(acc).strip()
+                        if not last:
+                            last = "（模型未返回可见文本，请检查模型名与网络。）"
+                    else:
+                        for piece in chat_completion_stream(
+                            prov,
+                            model_id,
+                            messages,
+                            timeout=120.0,
+                            max_tokens=2048,
+                        ):
+                            acc.append(piece)
+                        last = "".join(acc).strip() or "（模型未返回可见文本。）"
+                        st.markdown(last)
+                except Exception as e:
+                    last = f"**大模型调用失败：** {e}\n\n---\n\n" + answer_from_kb_only(query, hits)
+                    st.markdown(last)
+            else:
+                last = answer_from_kb_only(query, hits)
+                st.markdown(last)
             if show_ent:
                 with st.expander("术语命中（glossary）"):
                     st.write(terms_hit)
