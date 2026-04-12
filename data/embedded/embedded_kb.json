@@ -234,9 +234,9 @@
     "title": "学习路径：裸机 → RTOS → 网络",
     "tags": ["学习路径", "RTOS", "网络"],
     "platform": ["通用"],
-    "body": "建议顺序：GPIO/中断/定时器 → UART/SPI 驱动传感器 → 引入 FreeRTOS 做多任务 → 再学 WiFi/Ethernet 与协议栈。每阶段用一个小项目闭环验证。若目标平台为华为 OpenHarmony 或飞腾 Linux，再在操作系统抽象层上叠加对应工具链与系统服务。",
+    "body": "建议顺序：GPIO/中断/定时器 → UART/SPI 驱动传感器 → 引入 FreeRTOS 做多任务 → 再学 WiFi/Ethernet 与协议栈。每阶段用一个小项目闭环验证。若目标平台为华为 OpenHarmony 或飞腾开发板（含飞腾 Linux 路线），再在操作系统抽象层上叠加对应工具链与系统服务。",
     "source": "课程化整理",
-    "related_ids": ["kb-013", "kb-005", "kb-025", "kb-033"],
+    "related_ids": ["kb-013", "kb-005", "kb-025", "kb-033", "kb-034"],
     "prerequisite_ids": []
   },
   {
@@ -326,7 +326,197 @@
     "platform": ["通用"],
     "body": "每条记录中的 `related_ids` 表示扩展阅读或并列主题；`prerequisite_ids` 表示理解本条目前建议先掌握的内容。检索命中后，程序可据此展开 Mermaid 子图：实线表示关联，虚线表示前置。这是面向学习的轻量「知识关联」，便于把分散概念连成路径；维护时为新条目填写合理的 id 引用即可增强导航，无需图数据库。",
     "source": "本项目 embedded_kb.json 数据约定",
-    "related_ids": ["kb-024", "kb-025"],
+    "related_ids": ["kb-024", "kb-025", "kb-034"],
     "prerequisite_ids": []
+  },
+  {
+    "id": "kb-034",
+    "title": "飞腾开发板：实训路线与外设实验顺序（补充）",
+    "tags": ["飞腾开发板", "学习路线", "GPIO", "实验"],
+    "platform": ["飞腾开发板", "通用"],
+    "body": "飞腾开发板在课程与实训中可作为 MCU 裸机/RTOS 或 AArch64 Linux 入门载体，具体主控型号、时钟与外设引脚须以随板手册与原理图为准。建议路线：① 用板卡厂商或课程模板跑通下载与串口日志；② GPIO/按键/LED；③ 定时器与 PWM；④ UART/SPI/I2C 连传感器；⑤ 再视板卡能力扩展到网络、文件系统或 Linux 用户态。与 STM32/ESP 的差异主要在启动流程、工具链与 BSP 名称，通用排错方法（电源、波特率、中断与设备树）可迁移。",
+    "source": "通用教学实践整理（引脚与寄存器以厂商资料为准）",
+    "related_ids": ["kb-024", "kb-025", "kb-002", "kb-035"],
+    "prerequisite_ids": ["kb-025"]
+  },
+  {
+    "id": "kb-035",
+    "title": "STM32 RCC 时钟树：HSE、PLL 与总线分频",
+    "tags": ["RCC", "时钟", "PLL", "STM32"],
+    "platform": ["STM32", "通用"],
+    "body": "系统主频通常由 HSE/HSI 经 PLL 倍频得到，再经 AHB/APB 预分频供给各总线。修改 PLL 后 UART/SPI 等外设波特率计算基准会变。常见误区：忘记使能外设所在总线时钟、USB 需 48 MHz 专用约束、以及 Flash 等待周期与主频档位不匹配导致跑飞。调试时先用简单 GPIO 翻转或 MCO 输出核对实际频率。",
+    "source": "ST 参考手册公开概念",
+    "related_ids": ["kb-002", "kb-026", "kb-034"],
+    "prerequisite_ids": ["kb-002"]
+  },
+  {
+    "id": "kb-036",
+    "title": "I2C 主机：寻址、ACK/NACK 与传感器读取",
+    "tags": ["I2C", "传感器", "总线"],
+    "platform": ["通用", "STM32", "ESP32", "飞腾开发板"],
+    "body": "7 位地址左移一位配合读写位；从机无应答（NACK）常见原因：地址错误、从机未上电、SDA/SCL 无合适上拉、或总线被拉死。读多字节时主机在最后一字节发 NACK。固件中建议实现超时与总线恢复（时钟脉冲法）避免死锁。速率与上拉、走线电容相关，长板或飞线时需降速验证。",
+    "source": "通用 I2C 规范与工程经验",
+    "related_ids": ["kb-016", "kb-032"],
+    "prerequisite_ids": ["kb-016"]
+  },
+  {
+    "id": "kb-037",
+    "title": "ESP32 分区表、NVS 与 OTA 概念",
+    "tags": ["ESP32", "分区表", "OTA", "NVS"],
+    "platform": ["ESP32"],
+    "body": "分区表定义 factory/ota_0/ota_1、phy_init、nvs 等区域的偏移与大小，须与 flash 容量一致。OTA 双分区可在不停机条件下切换固件，需实现校验与回滚策略。NVS 适合键值与小配置，磨损由底层管理；大日志或流媒体不宜长期写 NVS。`idf.py menuconfig` 中可调整分区 CSV。",
+    "source": "乐鑫 ESP-IDF 公开文档（概念）",
+    "related_ids": ["kb-005", "kb-039"],
+    "prerequisite_ids": ["kb-005"]
+  },
+  {
+    "id": "kb-038",
+    "title": "电源纹波、去耦电容与简单 EMC 意识",
+    "tags": ["电源", "去耦", "EMC", "布局"],
+    "platform": ["通用", "STM32", "飞腾开发板"],
+    "body": "数字芯片应在 VDD 引脚近端放置高频去耦（如 100 nF）与体电容组合，大电流回路面积尽量小。晶振走线远离数字开关噪声源。测量纹波时用接地弹簧或短地线减少环路拾取。复位引脚上拉与 RC 需符合数据手册，避免误复位。",
+    "source": "硬件入门公开资料",
+    "related_ids": ["kb-022", "kb-025"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-039",
+    "title": "Flash 擦写寿命、磨损均衡与日志策略",
+    "tags": ["Flash", "寿命", "日志", "存储"],
+    "platform": ["通用", "ESP32", "STM32"],
+    "body": "NOR/NAND 与片内 Flash 均有擦写次数上限。频繁写同一扇区会快速耗尽寿命；日志可环形缓冲、批量写入或外接 EEPROM。ESP32 的 SPIFFS/LittleFS 等文件系统带有一定磨损考虑，但仍需避免高频小写。关键配置可双备份校验。",
+    "source": "存储与文件系统通用概念",
+    "related_ids": ["kb-037", "kb-019"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-040",
+    "title": "定时器输入捕获：脉宽与频率测量",
+    "tags": ["定时器", "输入捕获", "PWM", "测量"],
+    "platform": ["STM32", "ESP32", "飞腾开发板"],
+    "body": "输入捕获在边沿锁存计数器值，可计算周期与占空比（双沿或双通道配合）。高频信号注意采样时钟分辨率与 ISR 开销；更高频可用硬件计数器门控。与 PWM 输出同一定时器时注意资源冲突与引脚 AF 映射。",
+    "source": "通用定时器应用",
+    "related_ids": ["kb-023", "kb-002"],
+    "prerequisite_ids": ["kb-002"]
+  },
+  {
+    "id": "kb-041",
+    "title": "嵌入式单元测试：与硬件解耦的边界",
+    "tags": ["单元测试", "Mock", "质量"],
+    "platform": ["通用"],
+    "body": "纯算法与协议解析可在 PC 上跑单元测试；依赖寄存器与外设的部分需抽象 HAL 接口或用仿真/记录回放。持续集成可对解析层与状态机做覆盖率统计，板级测试仍依赖硬件在环。避免在测试中依赖未定义执行顺序的全局硬件状态。",
+    "source": "软件工程通用实践",
+    "related_ids": ["kb-022", "kb-024"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-042",
+    "title": "FreeRTOS 队列与事件组：任务间传数据",
+    "tags": ["FreeRTOS", "队列", "事件组"],
+    "platform": ["通用", "STM32", "ESP32"],
+    "body": "队列适合传递结构体或字节流，可阻塞等待；ISR 中仅用 `FromISR` 变体且注意唤醒优先级。事件组适合多条件组合唤醒。注意队列深度与入队频率，避免发送失败导致数据丢失；关键路径可配合计数信号量做背压。",
+    "source": "FreeRTOS 文档（概念）",
+    "related_ids": ["kb-013", "kb-014", "kb-027"],
+    "prerequisite_ids": ["kb-013"]
+  },
+  {
+    "id": "kb-043",
+    "title": "以太网分层：PHY、MAC 与 LwIP 在 MCU 中的角色",
+    "tags": ["以太网", "LwIP", "TCP", "STM32"],
+    "platform": ["STM32", "通用", "飞腾开发板"],
+    "body": "片内或外置 PHY 负责物理层链路；MAC 处理帧与 DMA。LwIP 提供协议栈与 socket 抽象，可跑在 RTOS 任务中。调试时先用 ping 与静态 IP 验证链路，再开 DHCP。内存池与 pbuf 配置影响并发连接数与稳定性，需按 RAM 预算调整。",
+    "source": "LwIP 与 MCU 手册公开概念",
+    "related_ids": ["kb-024", "kb-006"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-044",
+    "title": "OpenHarmony 分布式软总线与安全：概念层理解",
+    "tags": ["OpenHarmony", "分布式", "软总线", "安全"],
+    "platform": ["华为开发板"],
+    "body": "分布式软总线用于近场设备发现与通信抽象，应用侧多表现为系统服务与权限模型。学习重点放在：设备认证、会话与权限声明、以及业务数据最小暴露原则。具体 API 与策略以当前 OpenHarmony 版本与华为开发者文档为准，勿与局域网 socket 编程完全等同。",
+    "source": "OpenHarmony 公开白皮书级概念",
+    "related_ids": ["kb-008", "kb-009", "kb-030"],
+    "prerequisite_ids": ["kb-008"]
+  },
+  {
+    "id": "kb-045",
+    "title": "Bootloader 与 IAP：向量表偏移与映像校验",
+    "tags": ["Bootloader", "IAP", "向量表", "STM32"],
+    "platform": ["STM32", "飞腾开发板"],
+    "body": "应用区与 Boot 区分区存放时，应用需在 SystemInit 或启动早期设置 VTOR（或等价机制）指向应用向量表。升级映像应带 CRC/签名，Boot 校验通过后再跳转。跳转前关闭中断、反初始化外设，避免残留状态影响应用。具体扇区划分与写保护以芯片参考手册为准。",
+    "source": "ST 应用笔记类公开概念",
+    "related_ids": ["kb-019", "kb-002", "kb-039"],
+    "prerequisite_ids": ["kb-019"]
+  },
+  {
+    "id": "kb-046",
+    "title": "看门狗与低功耗并存时的设计注意",
+    "tags": ["看门狗", "低功耗", "喂狗"],
+    "platform": ["STM32", "ESP32"],
+    "body": "深度睡眠或停止模式下部分时钟停振，独立看门狗若仍运行需在唤醒窗口内喂狗。Light sleep 可与 modem sleep 策略组合时，确认哪些外设可唤醒 CPU。避免在长时间 Flash 擦写临界区关中断过久导致看门狗复位。",
+    "source": "厂商低功耗应用笔记（概念）",
+    "related_ids": ["kb-012", "kb-007", "kb-037"],
+    "prerequisite_ids": ["kb-012"]
+  },
+  {
+    "id": "kb-047",
+    "title": "Modbus TCP 与 Modbus RTU 的差异要点",
+    "tags": ["Modbus", "TCP", "RTU", "工业"],
+    "platform": ["通用", "STM32"],
+    "body": "RTU 依赖串口时序与 CRC；TCP 为 MBAP 头 + PDU，由以太网保证帧边界，无 3.5 字符时间要求。网关设备常做协议转换。实现 TCP 侧需注意连接数、超时与半开连接清理。功能码与寄存器模型在两种载体上一致。",
+    "source": "Modbus 组织公开规范概述",
+    "related_ids": ["kb-032", "kb-043"],
+    "prerequisite_ids": ["kb-032"]
+  },
+  {
+    "id": "kb-048",
+    "title": "逻辑分析仪与协议解码在总线排错中的使用",
+    "tags": ["逻辑分析仪", "调试", "I2C", "SPI"],
+    "platform": ["通用"],
+    "body": "逻辑分析仪适合并行观察多路数字信号，配合解码器快速查看 I2C/SPI/UART 帧内容。采样率宜为被测信号最高频率的数倍。探头接地尽量短，避免串扰误判。与示波器互补：示波器看模拟质量与上升沿，逻辑分析仪看时序与协议。",
+    "source": "通用仪器使用入门",
+    "related_ids": ["kb-022", "kb-036", "kb-016"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-049",
+    "title": "C 语言 volatile 与寄存器位操作的常见写法",
+    "tags": ["volatile", "寄存器", "位操作", "MMIO"],
+    "platform": ["通用", "STM32"],
+    "body": "对硬件寄存器映射的指针应使用 `volatile` 防止被优化掉有副作用的访问。读改写单一位时常用 `(reg |= mask)`，注意只写位与读敏感位（如中断清除位）的语义。CMSIS 风格寄存器结构体可提高可读性。位带（bit-band）若存在，可减少临界区长度，具体以内核与芯片手册为准。",
+    "source": "C 标准与 MCU 手册阅读方法",
+    "related_ids": ["kb-031", "kb-026"],
+    "prerequisite_ids": ["kb-031"]
+  },
+  {
+    "id": "kb-050",
+    "title": "ESP32 Deep Sleep、RTC 慢存与唤醒源选择",
+    "tags": ["ESP32", "Deep Sleep", "RTC", "唤醒"],
+    "platform": ["ESP32"],
+    "body": "Deep sleep 关闭大部分数字外设，仅 RTC 域可保留少量数据与定时唤醒。GPIO 唤醒需配置电平或边沿。唤醒后相当于重启，应用状态需从 NVS 或 RTC 内存恢复。与 light sleep 相比功耗更低但启动路径更长。",
+    "source": "乐鑫技术参考（概念）",
+    "related_ids": ["kb-007", "kb-037", "kb-046"],
+    "prerequisite_ids": ["kb-007"]
+  },
+  {
+    "id": "kb-051",
+    "title": "华为开发板：hdc 调试与日志抓取入门",
+    "tags": ["华为", "hdc", "调试", "OpenHarmony"],
+    "platform": ["华为开发板"],
+    "body": "在 OpenHarmony 设备侧常用 hdc 连接主机与设备，执行 shell、安装应用、拉取日志等。学习时先确认 USB 驱动与设备枚举正常，再熟悉 `hdc shell` 下常用路径与日志标签。具体子命令以当前工具链版本文档为准；敏感生产环境需遵守安全与权限规范。",
+    "source": "华为开发者公开工具说明",
+    "related_ids": ["kb-008", "kb-009"],
+    "prerequisite_ids": ["kb-008"]
+  },
+  {
+    "id": "kb-052",
+    "title": "RTOS 内存管理：heap_4 与栈溢出监控配合",
+    "tags": ["FreeRTOS", "堆", "heap", "监控"],
+    "platform": ["通用", "STM32", "ESP32"],
+    "body": "FreeRTOS 提供多种 heap 实现；heap_4 支持相邻空闲块合并，适合碎片敏感场景。`configTOTAL_HEAP_SIZE` 需大于所有任务栈与队列分配峰值。结合 `vApplicationMallocFailedHook` 与栈溢出检测可在早期发现资源问题。",
+    "source": "FreeRTOS 内核文档（概念）",
+    "related_ids": ["kb-013", "kb-015", "kb-042"],
+    "prerequisite_ids": ["kb-013"]
   }
 ]

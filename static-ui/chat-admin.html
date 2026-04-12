@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>对话 — 管理员 — 嵌入式系统学习 AGENT</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/chat.css" />
+</head>
+<body>
+  <nav class="mock-topnav">
+    <span class="nav-title">静态 UI</span>
+    <a href="index.html">总览</a>
+    <a href="auth.html">登录 / 注册</a>
+    <a href="chat-user.html">对话（用户）</a>
+    <a href="chat-admin.html" class="active">对话（管理员）</a>
+  </nav>
+
+  <div class="chat-app">
+    <aside class="chat-sidebar">
+      <div class="sb-top">
+        <h2 class="sb-brand-title">嵌入式系统学习 AGENT</h2>
+        <p class="sb-brand-desc">基于本地知识库与 TF-IDF 检索；结合所选模型生成回答。</p>
+        <div class="sb-meta">
+          当前平台侧重：<strong>STM32</strong><br />
+          当前模型：<strong>deepseek-chat</strong>
+        </div>
+      </div>
+
+      <p class="sb-section-h">历史对话</p>
+      <div class="conv-scroll">
+        <button type="button" class="conv-item active">UART DMA 环形缓冲…</button>
+        <button type="button" class="conv-item">新对话</button>
+      </div>
+
+      <button type="button" class="btn" style="margin-top:0;margin-bottom:0.65rem;">新建对话</button>
+
+      <div class="sb-controls">
+        <p class="sb-section-h">模型与平台</p>
+        <label>开发板 / 平台侧重</label>
+        <select><option>STM32</option></select>
+        <label>大模型提供方</label>
+        <select><option>DeepSeek</option></select>
+        <label>模型名</label>
+        <input type="text" value="deepseek-chat" />
+        <p class="sb-section-h" style="margin-top:0.75rem;">管理员调试</p>
+        <label class="checkbox-row" style="margin-top:0.25rem;"><input type="checkbox" /> 显示术语命中</label>
+        <label class="checkbox-row"><input type="checkbox" /> 显示意图</label>
+        <label class="checkbox-row"><input type="checkbox" /> 显示拼装上下文</label>
+        <label class="checkbox-row"><input type="checkbox" checked /> 显示轻量图谱源码</label>
+      </div>
+
+      <div class="sb-footer">
+        <div class="user-chip">👤 admin</div>
+        <div class="user-pop">
+          <p>欢迎，<strong>管理员 admin</strong></p>
+          <p class="muted">本地知识库检索 · 通义 / DeepSeek 模型回答</p>
+          <button type="button" class="btn btn-secondary" style="margin-top:0.65rem;">返回登录</button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="chat-main">
+      <div class="chat-stream">
+        <div class="msg-row user">
+          <div class="msg-bubble">如何配置 UART DMA？</div>
+        </div>
+        <div class="msg-row assistant">
+          <div class="msg-bubble">（示意）可使用 IDLE 中断配合 DMA……</div>
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" placeholder="输入嵌入式相关问题…" />
+        <button type="button" class="btn">发送</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

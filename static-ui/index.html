@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>静态 UI 总览 — 嵌入式系统学习 AGENT</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <nav class="mock-topnav">
+    <span class="nav-title">静态 UI 演示</span>
+    <a href="index.html" class="active">总览</a>
+    <a href="auth.html">登录 / 注册</a>
+    <a href="chat-user.html">对话（普通用户）</a>
+    <a href="chat-admin.html">对话（管理员）</a>
+    <span class="nav-hint">纯 HTML/CSS；登录与注册合并为 auth.html</span>
+  </nav>
+
+  <main class="main-centered">
+    <h1>嵌入式系统学习 AGENT</h1>
+    <p class="caption">本目录为根据 <code>docs/项目修改文档.md</code> 与当前流程整理的<strong>静态页面示意</strong>，用于观看与改稿。</p>
+    <div class="card" style="margin-top:1.25rem;">
+      <p style="margin:0 0 0.75rem;"><strong>包含页面</strong></p>
+      <ul style="margin:0;padding-left:1.25rem;line-height:1.8;">
+        <li><a href="auth.html">auth.html</a> — 未登录 · 顶栏右上「登录 / 注册」切换 · 表单整页居中 · 较大字号（<code>login.html</code> / <code>register.html</code> 会跳转至此）</li>
+        <li><a href="chat-user.html">chat-user.html</a> — 已登录 · 普通用户</li>
+        <li><a href="chat-admin.html">chat-admin.html</a> — 已登录 · 管理员</li>
+      </ul>
+      <p class="caption" style="margin-top:1rem;margin-bottom:0;">对话页见 <code>chat-user.html</code> / <code>chat-admin.html</code> + <code>assets/chat.css</code>（侧栏左上元信息、可滚动会话列表、左下悬停账户区、左右气泡）。</p>
+    </div>
+  </main>
+</body>
+</html>

@@ -51,3 +51,32 @@ Modbus
 交叉编译
 GCC
 CMake
+RCC
+PLL
+HSE
+NVS
+OTA
+分区表
+去耦
+EMC
+输入捕获
+单元测试
+Mock
+以太网
+LwIP
+PHY
+MAC
+Bootloader
+IAP
+VTOR
+逻辑分析仪
+volatile
+位带
+Deep Sleep
+hdc
+heap_4
+磨损均衡
+软总线
+MBAP
+Modbus TCP
+IAP升级

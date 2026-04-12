@@ -1,0 +1,222 @@
+/* 主对话页：侧栏顶/底、会话滚动列表、类 DeepSeek 左右气泡 */
+
+.chat-app {
+  display: flex;
+  min-height: calc(100vh - 48px);
+}
+
+.chat-sidebar {
+  width: 268px;
+  max-width: 280px;
+  flex-shrink: 0;
+  background: var(--sidebar);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 0.55rem 0.65rem 0.4rem;
+  min-height: 0;
+  overflow: hidden;
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.sb-brand-title {
+  margin: 0 0 0.2rem;
+  font-size: 0.98rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text);
+}
+
+.sb-brand-desc {
+  margin: 0 0 0.45rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.sb-meta {
+  font-size: 0.82rem;
+  color: var(--text);
+  margin-bottom: 0.45rem;
+  line-height: 1.4;
+}
+
+.sb-meta strong {
+  color: var(--text);
+}
+
+.sb-section-h {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0.35rem 0 0.4rem;
+}
+
+.conv-scroll {
+  flex: 0 0 auto;
+  min-height: 100px;
+  height: 240px;
+  max-height: 36vh;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fafbfc;
+  margin-bottom: 0.6rem;
+  padding: 0.35rem 0.3rem;
+}
+
+.conv-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.45rem 0.55rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 8px;
+  margin-bottom: 0.15rem;
+  background: transparent;
+  cursor: pointer;
+  color: var(--text);
+  font-family: var(--font);
+  line-height: 1.35;
+}
+
+.conv-item:hover {
+  background: rgba(61, 90, 102, 0.08);
+}
+
+.conv-item.active {
+  background: rgba(61, 90, 102, 0.16);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.sb-controls label {
+  font-size: 0.92rem;
+}
+
+.sb-controls input,
+.sb-controls select {
+  font-size: 0.95rem !important;
+  min-height: 2.4rem;
+}
+
+/* 左下角账户：悬停显示卡片 */
+.sb-footer {
+  position: relative;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.user-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid var(--border);
+  font-size: 0.95rem;
+  cursor: default;
+}
+
+.user-pop {
+  display: none;
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 6px);
+  width: 240px;
+  padding: 0.85rem 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  z-index: 20;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.user-pop p {
+  margin: 0 0 0.45rem;
+}
+
+.user-pop .muted {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+.sb-footer:hover .user-pop {
+  display: block;
+}
+
+.chat-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.5rem 1.25rem;
+  background: var(--bg);
+}
+
+.chat-stream {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 1rem;
+}
+
+.msg-row {
+  display: flex;
+  margin-bottom: 1rem;
+  font-size: 1.06rem;
+  line-height: 1.65;
+}
+
+.msg-row.user {
+  justify-content: flex-end;
+}
+
+.msg-row.assistant {
+  justify-content: flex-start;
+}
+
+.msg-bubble {
+  max-width: min(42rem, 88%);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.msg-row.user .msg-bubble {
+  background: #dfe8ec;
+  border-color: rgba(61, 90, 102, 0.2);
+}
+
+.msg-row.assistant .msg-bubble {
+  background: #fff;
+}
+
+.chat-input-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: auto;
+}
+
+.chat-input-row input {
+  flex: 1;
+  font-size: 1.05rem !important;
+  min-height: 2.65rem;
+}
+
+.chat-input-row .btn {
+  width: auto;
+  margin: 0;
+  font-size: 1.02rem;
+  min-height: 2.65rem;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}

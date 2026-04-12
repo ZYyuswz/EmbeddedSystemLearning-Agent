@@ -1,0 +1,120 @@
+/* 登录 / 注册整页：无左侧栏，顶栏右上切换，居中大字表单 */
+
+.auth-body {
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+.auth-page {
+  min-height: calc(100vh - 48px);
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 1.75rem 2.25rem 1rem;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+}
+
+.auth-brand {
+  min-width: 0;
+}
+
+.auth-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.auth-sub {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.auth-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.auth-tab {
+  font-size: 1.05rem;
+  font-weight: 500;
+  padding: 0.55rem 1.35rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--primary);
+  cursor: pointer;
+  font-family: var(--font);
+}
+
+.auth-tab:hover {
+  background: var(--sidebar);
+}
+
+.auth-tab.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.auth-main {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2.5rem 1.5rem 3rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 26rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem 2rem 2.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.auth-card.hidden {
+  display: none;
+}
+
+.auth-card-title {
+  margin: 0 0 1.25rem;
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+.auth-card label {
+  font-size: 1.02rem;
+  margin-top: 1rem;
+}
+
+.auth-card input[type="text"],
+.auth-card input[type="password"] {
+  font-size: 1.08rem;
+  padding: 0.65rem 0.85rem;
+  min-height: 2.75rem;
+  margin-top: 0.4rem;
+}
+
+.auth-submit {
+  margin-top: 1.5rem !important;
+  font-size: 1.08rem !important;
+  min-height: 2.75rem !important;
+  padding-top: 0.65rem !important;
+  padding-bottom: 0.65rem !important;
+}

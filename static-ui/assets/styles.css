@@ -1,0 +1,375 @@
+/* 嵌入式学习 AGENT — 静态 UI 示意（与 docs/项目修改文档 原则一致：低饱和、无渐变） */
+
+:root {
+  --primary: #3d5a66;
+  --primary-hover: #324a54;
+  --bg: #f4f5f7;
+  --bg-card: #ffffff;
+  --sidebar: #eef0f3;
+  --border: rgba(61, 90, 102, 0.14);
+  --text: #1a202c;
+  --text-muted: #5a6578;
+  --radius: 8px;
+  --font: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --sidebar-width: 260px;
+  --sidebar-max: 280px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* —— 全局顶栏：页面切换（仅静态演示） —— */
+.mock-topnav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding: 0.65rem 1.25rem;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.mock-topnav a {
+  color: var(--primary);
+  text-decoration: none;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+}
+
+.mock-topnav a:hover {
+  background: var(--sidebar);
+}
+
+.mock-topnav a.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.mock-topnav .nav-title {
+  font-weight: 600;
+  margin-right: 0.75rem;
+  color: var(--text);
+}
+
+.mock-topnav .nav-hint {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* —— 应用壳：侧栏 + 主区 —— */
+.app-shell {
+  display: flex;
+  min-height: calc(100vh - 48px);
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  max-width: var(--sidebar-max);
+  flex-shrink: 0;
+  background: var(--sidebar);
+  border-right: 1px solid var(--border);
+  padding: 1rem 0.9rem;
+  overflow-y: auto;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  padding: 1.25rem 1.75rem 2rem;
+  max-width: 56rem;
+}
+
+/* 无侧栏页（仅主列居中） */
+.main-centered {
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+}
+
+.layout-with-sidebar {
+  display: flex;
+  min-height: calc(100vh - 48px);
+}
+
+.layout-with-sidebar .sidebar {
+  width: var(--sidebar-width);
+  max-width: var(--sidebar-max);
+}
+
+.layout-with-sidebar .main-wide {
+  flex: 1;
+  padding: 1.25rem 2rem 2rem;
+  min-width: 0;
+}
+
+h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 0.35rem;
+  letter-spacing: -0.02em;
+}
+
+h2,
+.h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+.caption {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0 0 1rem;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.85rem 0;
+}
+
+.section-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0.25rem 0 0.4rem;
+}
+
+/* —— 表单 —— */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.35rem 1.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0.85rem 0 0.35rem;
+}
+
+input[type="text"],
+input[type="password"],
+select {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #fff;
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid rgba(61, 90, 102, 0.25);
+  outline-offset: 1px;
+}
+
+.btn {
+  display: inline-block;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.55rem 1rem;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  background: var(--primary);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn:hover {
+  background: var(--primary-hover);
+}
+
+.btn-secondary {
+  background: #fff;
+  color: var(--primary);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--sidebar);
+}
+
+/* —— 欢迎区（改进排版示意） —— */
+.welcome-block {
+  padding: 0.65rem 0 0.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.welcome-block .user-line {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0 0 0.2rem;
+}
+
+.welcome-block .meta-line {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* —— 聊天 —— */
+.chat-row {
+  display: flex;
+  gap: 0.65rem;
+  margin-bottom: 1.1rem;
+  align-items: flex-start;
+}
+
+.chat-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.chat-avatar.user {
+  background: #4a6672;
+}
+
+.chat-avatar.bot {
+  background: var(--primary);
+}
+
+.chat-bubble {
+  flex: 1;
+  min-width: 0;
+  padding: 0.65rem 0.9rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.chat-input-bar {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.chat-input-bar input {
+  flex: 1;
+  margin: 0;
+}
+
+.chat-input-bar .btn {
+  width: auto;
+  margin: 0;
+  padding: 0.5rem 1rem;
+}
+
+.samples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.75rem 0 1.25rem;
+}
+
+.samples .chip {
+  font-size: 13px;
+  padding: 0.4rem 0.75rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--primary);
+  cursor: default;
+}
+
+.info-banner {
+  padding: 0.75rem 1rem;
+  background: #e8eef1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.meta-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.meta-header .meta-item {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.meta-header .meta-item strong {
+  color: var(--text);
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0.35rem 0;
+  font-size: 13px;
+}
+
+.checkbox-row input {
+  width: auto;
+}
+
+.expander-mock {
+  margin-top: 0.5rem;
+  font-size: 12px;
+  color: var(--primary);
+  cursor: pointer;
+}
+
+/* 登录页：侧栏内 radio 模拟 */
+.mode-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.mode-row label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.mode-row input {
+  width: auto;
+}

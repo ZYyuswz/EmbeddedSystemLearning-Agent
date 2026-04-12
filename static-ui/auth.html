@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>登录 / 注册 — 嵌入式系统学习 AGENT</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="stylesheet" href="assets/auth.css" />
+</head>
+<body class="auth-body">
+  <nav class="mock-topnav">
+    <span class="nav-title">静态 UI</span>
+    <a href="index.html">总览</a>
+    <a href="auth.html" class="active">登录 / 注册</a>
+    <a href="chat-user.html">对话（用户）</a>
+    <a href="chat-admin.html">对话（管理员）</a>
+    <span class="nav-hint">右上角切换登录与注册 · 表单整页居中 · 较大字号</span>
+  </nav>
+
+  <div class="auth-page">
+    <header class="auth-topbar">
+      <div class="auth-brand">
+        <h1 class="auth-title">嵌入式学习助手</h1>
+        <p class="auth-sub">本地知识库 + 通义 / DeepSeek · RAG 答疑</p>
+      </div>
+      <div class="auth-tabs" role="tablist">
+        <button type="button" class="auth-tab active" id="tab-login" aria-selected="true">登录</button>
+        <button type="button" class="auth-tab" id="tab-register" aria-selected="false">注册</button>
+      </div>
+    </header>
+
+    <main class="auth-main">
+      <div class="auth-card" id="panel-login">
+        <h2 class="auth-card-title">登录</h2>
+        <form action="#" onsubmit="return false;">
+          <label for="auth-u">用户名</label>
+          <input id="auth-u" type="text" autocomplete="username" placeholder="请输入用户名" />
+          <label for="auth-p">密码</label>
+          <input id="auth-p" type="password" autocomplete="current-password" placeholder="请输入密码" />
+          <button type="submit" class="btn auth-submit">登录</button>
+        </form>
+      </div>
+
+      <div class="auth-card hidden" id="panel-register">
+        <h2 class="auth-card-title">注册</h2>
+        <form action="#" onsubmit="return false;">
+          <label for="auth-nu">设置用户名</label>
+          <input id="auth-nu" type="text" autocomplete="username" placeholder="新用户名" />
+          <label for="auth-np">设置密码</label>
+          <input id="auth-np" type="password" autocomplete="new-password" placeholder="新密码" />
+          <button type="submit" class="btn auth-submit">注册</button>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      var tabLogin = document.getElementById("tab-login");
+      var tabReg = document.getElementById("tab-register");
+      var panelLogin = document.getElementById("panel-login");
+      var panelReg = document.getElementById("panel-register");
+
+      function showLogin() {
+        tabLogin.classList.add("active");
+        tabReg.classList.remove("active");
+        tabLogin.setAttribute("aria-selected", "true");
+        tabReg.setAttribute("aria-selected", "false");
+        panelLogin.classList.remove("hidden");
+        panelReg.classList.add("hidden");
+      }
+      function showRegister() {
+        tabReg.classList.add("active");
+        tabLogin.classList.remove("active");
+        tabReg.setAttribute("aria-selected", "true");
+        tabLogin.setAttribute("aria-selected", "false");
+        panelReg.classList.remove("hidden");
+        panelLogin.classList.add("hidden");
+      }
+
+      tabLogin.addEventListener("click", showLogin);
+      tabReg.addEventListener("click", showRegister);
+
+      if (location.hash === "#register") showRegister();
+    })();
+  </script>
+</body>
+</html>
