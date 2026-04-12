@@ -1,6 +1,6 @@
 # 嵌入式系统学习 AGENT
 
-基于 **本地 JSON 知识库 + 字符 n-gram TF-IDF 检索** 与 **通义千问（DashScope）/ DeepSeek** 云端 API 的 RAG 问答；**不使用 Neo4j**。适合 STM32、ESP32、华为开发板、飞腾开发板等方向的通用概念学习与答疑（内容来自公开资料整理，具体引脚/寄存器以各厂商手册为准）。
+基于 **本地 JSON 知识库 + 字符 n-gram TF-IDF 检索** 与 **通义千问（DashScope）/ DeepSeek** 云端 API 的 RAG 问答；**不使用 Neo4j**。适合 STM32、ESP32、华为开发板、沸腾开发板等方向的通用概念学习与答疑（内容来自公开资料整理，具体引脚/寄存器以各厂商手册为准）。
 
 详细设计见：`docs/嵌入式系统学习AGENT-改造说明.md`。
 
@@ -30,10 +30,24 @@ copy config\secrets.example.env config\secrets.env
 ## 运行
 
 ```bash
+python scripts/start_backend.py
+```
+
+另开一个终端：
+
+```bash
 python -m streamlit run login.py --server.port 8502
 ```
 
 浏览器访问 `http://localhost:8502` 。
+
+## 板卡助手（新增）
+
+- 后端服务：FastAPI（默认 `http://127.0.0.1:8000`）
+- 前端入口：登录后在侧栏页面切换到“板卡助手 / 评估结果 / 任务详情”
+- 默认鉴权 Token：`dev-token`（可通过环境变量 `BOARD_ASSISTANT_API_TOKEN` 覆盖）
+- API 文档：`docs/board-assistant-api.md`
+- Postman 集合：`prompts/sirius-api.postman.json`
 
 ## 配置说明
 

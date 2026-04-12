@@ -3,12 +3,15 @@
 """
 from __future__ import annotations
 
+import os
 import re
 
 import streamlit as st
 
 from embedded_glossary import GlossaryMatcher
 from embedded_kb import EmbeddedKB
+from frontend.api_client import BackendApiClient
+from frontend.board_assistant_page import render_board_assistant_page
 from llm_client import (
     answer_from_kb_only,
     chat_completion_stream,
@@ -26,6 +29,7 @@ PROVIDERS = ["通义千问", "DeepSeek"]
 DEFAULT_MODELS = {"通义千问": "qwen-turbo", "DeepSeek": "deepseek-chat"}
 # 侧栏「模型名」按提供方分 key，避免从通义切到 DeepSeek 时仍把 qwen-turbo 发给 DeepSeek（会报 Model Not Exist）
 _LLM_MODEL_STATE_KEY = {"通义千问": "llm_model_input_dashscope", "DeepSeek": "llm_model_input_deepseek"}
+NAV_PAGES = ["学习问答", "板卡助手"]
 
 _SAMPLE_QUESTIONS = [
     "STM32 里 NVIC 中断优先级如何分组？",
@@ -97,6 +101,13 @@ def _title_from_query(q: str) -> str:
     if len(q) <= 26:
         return q
     return q[:26].rstrip() + "…"
+
+
+def _build_backend_client() -> BackendApiClient:
+    """构建板卡助手后端客户端。"""
+    base_url = os.getenv("BOARD_ASSISTANT_API_BASE_URL", "http://127.0.0.1:8000")
+    token = os.getenv("BOARD_ASSISTANT_API_TOKEN", "dev-token")
+    return BackendApiClient(base_url=base_url, token=token)
 
 
 def _conv_row_label(title: str) -> str:
@@ -238,6 +249,7 @@ def main(is_admin: bool, usname: str) -> None:
     with st.sidebar:
         st.markdown("### 嵌入式系统学习 AGENT")
         st.caption("基于本地知识库与 TF-IDF 检索；结合所选模型生成回答。")
+        app_page = st.selectbox("页面", NAV_PAGES, index=0)
         meta_slot = st.empty()
 
         st.caption("历史对话")
@@ -311,6 +323,10 @@ def main(is_admin: bool, usname: str) -> None:
                 st.session_state.logged_in = False
                 st.session_state.admin = False
                 _rerun()
+
+    if app_page == "板卡助手":
+        render_board_assistant_page(_build_backend_client())
+        return
 
     current_messages = st.session_state.messages[active_window_index]
 
