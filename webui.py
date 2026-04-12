@@ -21,7 +21,7 @@ from llm_client import (
 
 load_secrets()
 
-PLATFORMS = ["全部", "STM32", "ESP32", "华为开发板", "沸腾开发板"]
+PLATFORMS = ["全部", "STM32", "ESP32", "华为开发板", "飞腾开发板"]
 PROVIDERS = ["通义千问", "DeepSeek"]
 DEFAULT_MODELS = {"通义千问": "qwen-turbo", "DeepSeek": "deepseek-chat"}
 
@@ -53,7 +53,7 @@ def _key_ok(label: str) -> bool:
 
 def _build_answer_messages(intents_display: str, query: str, hits: list[tuple[dict, float]]) -> list[dict[str, str]]:
     system = (
-        "你是嵌入式系统学习助手，面向 STM32、ESP32、华为开发板、沸腾开发板等场景的通用技术答疑。"
+        "你是嵌入式系统学习助手，面向 STM32、ESP32、华为开发板、飞腾开发板等场景的通用技术答疑。"
         "回答必须主要依据「参考资料」；若资料不足以严谨作答，请先说明依据有限，再给出谨慎的简短建议，"
         "不要编造具体手册未给出的寄存器位与引脚号。"
     )

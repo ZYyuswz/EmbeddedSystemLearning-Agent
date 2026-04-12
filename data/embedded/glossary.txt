@@ -27,7 +27,15 @@ WiFi
 OpenHarmony
 鸿蒙
 DevEco
-沸腾开发板
+飞腾开发板
+Phytium
+openEuler
+设备树
+AArch64
+海思
+HDF
+MMIO
+Modbus
 Cortex-M
 裸机
 低功耗

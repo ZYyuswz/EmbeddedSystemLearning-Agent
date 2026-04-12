@@ -16,7 +16,7 @@
     "platform": ["STM32"],
     "body": "典型流程：SystemClock_Config 配 RCC → HAL_Init → MX_GPIO_Init / MX_USARTx_UART_Init 等。HAL 库以 __HAL_RCC_ 宏打开外设时钟，再配置 GPIO 复用功能（AF）与 UART 参数。调试时确认 HSE/HSI 与 PLL 倍频与板载晶振一致，否则串口波特率会漂移。",
     "source": "ST HAL 文档（概念）",
-    "related_ids": ["kb-001", "kb-004"],
+    "related_ids": ["kb-001", "kb-004", "kb-026"],
     "prerequisite_ids": ["kb-001"]
   },
   {
@@ -46,7 +46,7 @@
     "platform": ["ESP32"],
     "body": "乐鑫 ESP-IDF 基于 CMake：idf.py set-target esp32s3、build、flash、monitor。分区表与 flash 大小需与硬件一致。WiFi/BT 协议栈占用 RAM 较大，注意任务栈与堆配置。",
     "source": "乐鑫公开文档（概念）",
-    "related_ids": ["kb-006", "kb-007"],
+    "related_ids": ["kb-006", "kb-007", "kb-027"],
     "prerequisite_ids": []
   },
   {
@@ -76,7 +76,7 @@
     "platform": ["华为开发板"],
     "body": "面向 OpenHarmony 的开发通常在 DevEco Studio 中创建 Stage 模型应用：Ability、页面路由、权限声明。硬件侧通过 HDF 驱动框架与内核交互；学习路径建议先掌握组件生命周期与分布式软总线概念，再深入驱动。具体 API 以华为开发者文档为准。",
     "source": "华为开发者公开资料（概念）",
-    "related_ids": ["kb-009"],
+    "related_ids": ["kb-009", "kb-030"],
     "prerequisite_ids": []
   },
   {
@@ -86,27 +86,27 @@
     "platform": ["华为开发板"],
     "body": "敏感能力需在 module.json5 声明并运行时申请。UIAbility 的 onCreate/onForeground/onBackground 对应前后台切换；资源释放宜在 onDestroy。与裸机 STM32 不同，多任务由系统调度。",
     "source": "公开概念整理",
-    "related_ids": ["kb-008"],
+    "related_ids": ["kb-008", "kb-030"],
     "prerequisite_ids": ["kb-008"]
   },
   {
     "id": "kb-010",
-    "title": "沸腾开发板学习与通用外设路线",
-    "tags": ["沸腾开发板", "GPIO", "实验"],
-    "platform": ["沸腾开发板"],
-    "body": "以板卡官方说明书为准：先跑通 LED/按键与串口打印，再学时钟与定时器。若板卡基于国产 SoC，交叉编译链与镜像烧录工具以厂商提供为准；通用技能（Makefile/CMake、串口调试、逻辑分析仪）可迁移。",
-    "source": "通用学习路径（具体引脚见板卡手册）",
-    "related_ids": ["kb-011", "kb-012"],
+    "title": "飞腾开发板学习与通用外设路线",
+    "tags": ["飞腾开发板", "Phytium", "GPIO", "实验"],
+    "platform": ["飞腾开发板"],
+    "body": "飞腾（Phytium）为 ARM 指令集兼容路线，板卡形态可能覆盖 MCU 级裸机/RTOS 与 AArch64 跑 Linux 两类，须以随板文档区分。建议路线：先跑通 LED/按键与串口日志，再学时钟、定时器与中断；若跑 Linux，掌握 SSH/scp、dmesg 与网络 bring-up。交叉编译链、镜像、烧录与引脚定义一律以飞腾及板卡厂商公开手册为准，勿照搬 STM32/ESP 的引脚表。通用技能（Makefile/CMake、串口调试、逻辑分析仪）可在不同平台间迁移。",
+    "source": "公开架构资料与通用工程实践（具体寄存器/引脚以厂商手册为准）",
+    "related_ids": ["kb-011", "kb-012", "kb-028", "kb-029"],
     "prerequisite_ids": []
   },
   {
     "id": "kb-011",
     "title": "交叉编译与 gdbserver 远程调试",
     "tags": ["GCC", "gdb", "OpenOCD"],
-    "platform": ["通用", "STM32", "沸腾开发板"],
-    "body": "host 上 arm-none-eabi-gcc 生成 elf；OpenOCD + ST-Link/J-Link 提供 gdb 端口，target remote :3333。确认 -mcpu/-mthumb 与芯片一致。strip 调试符号可减小固件体积。",
+    "platform": ["通用", "STM32", "飞腾开发板"],
+    "body": "MCU 侧：host 上 arm-none-eabi-gcc 生成 elf；OpenOCD + ST-Link/J-Link 暴露 gdb 端口，`target remote :3333`。确认 -mcpu/-mthumb 与芯片一致。AArch64 Linux 目标则常用 aarch64-linux-gnu-gcc 与 gdbserver（见知识库中飞腾/Linux 相关条目）。strip 调试符号可减小固件体积。",
     "source": "通用工具链",
-    "related_ids": ["kb-010"],
+    "related_ids": ["kb-010", "kb-029"],
     "prerequisite_ids": []
   },
   {
@@ -156,7 +156,7 @@
     "platform": ["通用"],
     "body": "SPI 全双工、线多、速率高，适合 Flash/屏；I2C 两线+地、多从机地址，适合传感器 EEPROM。注意 I2C 上拉电阻与总线电容对最大速率限制。",
     "source": "通用概念",
-    "related_ids": ["kb-017"],
+    "related_ids": ["kb-017", "kb-032"],
     "prerequisite_ids": []
   },
   {
@@ -166,7 +166,7 @@
     "platform": ["STM32", "通用"],
     "body": "标准帧/扩展帧、波特率由分频与时间量子配置。过滤器可硬件屏蔽无关 ID。布线需终端电阻 120Ω 抑制反射。",
     "source": "通用概念",
-    "related_ids": ["kb-016"],
+    "related_ids": ["kb-016", "kb-032"],
     "prerequisite_ids": []
   },
   {
@@ -203,10 +203,10 @@
     "id": "kb-021",
     "title": "嵌入式 Linux 设备树（DTS）入门",
     "tags": ["设备树", "Linux", "驱动"],
-    "platform": ["华为开发板", "通用"],
-    "body": "设备树描述硬件资源，内核驱动通过 compatible 匹配 probe。学习路径：读懂 reg/interrupts/status 属性，再对照驱动中的 of_property_read 调用。",
-    "source": "内核文档（概念）",
-    "related_ids": ["kb-008"],
+    "platform": ["华为开发板", "飞腾开发板", "通用"],
+    "body": "设备树（DTS/DTB）描述内存、中断、时钟与外设节点，内核驱动通过 compatible 字符串匹配并 probe。学习路径：读懂 reg、interrupts、status、clocks 等常用属性，再对照驱动里的 of_property_read_* / devm_* 接口。ARM64 开发板（含常见飞腾、华为系参考设计）普遍使用设备树；具体节点命名以板级 dtsi 为准。",
+    "source": "内核文档与板级 BSP（概念）",
+    "related_ids": ["kb-008", "kb-028", "kb-029", "kb-030"],
     "prerequisite_ids": []
   },
   {
@@ -234,9 +234,99 @@
     "title": "学习路径：裸机 → RTOS → 网络",
     "tags": ["学习路径", "RTOS", "网络"],
     "platform": ["通用"],
-    "body": "建议顺序：GPIO/中断/定时器 → UART/SPI 驱动传感器 → 引入 FreeRTOS 做多任务 → 再学 WiFi/Ethernet 与协议栈。每阶段用一个小项目闭环验证。",
+    "body": "建议顺序：GPIO/中断/定时器 → UART/SPI 驱动传感器 → 引入 FreeRTOS 做多任务 → 再学 WiFi/Ethernet 与协议栈。每阶段用一个小项目闭环验证。若目标平台为华为 OpenHarmony 或飞腾 Linux，再在操作系统抽象层上叠加对应工具链与系统服务。",
     "source": "课程化整理",
-    "related_ids": ["kb-013", "kb-005"],
+    "related_ids": ["kb-013", "kb-005", "kb-025", "kb-033"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-025",
+    "title": "嵌入式系统背景：定义、约束与常见架构",
+    "tags": ["背景", "MCU", "SoC", "实时"],
+    "platform": ["通用"],
+    "body": "嵌入式系统是为特定功能设计的计算系统，常受成本、功耗、体积与实时性约束。典型形态包括：8/32 位 MCU（裸机或 RTOS）、应用处理器运行 Linux/Android/OpenHarmony、以及集成 NPU/ISP 的异构 SoC。实时性分硬实时（超截止即失败）与软实时（可偶发延迟）。学习时应区分「直接操作寄存器的外设思维」与「操作系统与中间件抽象」两套路径，并查阅对应平台官方文档。",
+    "source": "教材与公开综述整理",
+    "related_ids": ["kb-024", "kb-031", "kb-033"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-026",
+    "title": "STM32 HAL：GPIO 输出与翻转示例",
+    "tags": ["STM32", "HAL", "GPIO", "代码"],
+    "platform": ["STM32"],
+    "body": "以下为概念示例：须将 GPIO 端口、引脚宏与时钟与 CubeMX 生成或数据手册一致后再编译下载。\n\n```c\nvoid LED_Init(void) {\n  __HAL_RCC_GPIOB_CLK_ENABLE();\n  GPIO_InitTypeDef g = {0};\n  g.Pin = GPIO_PIN_0;\n  g.Mode = GPIO_MODE_OUTPUT_PP;\n  g.Pull = GPIO_NOPULL;\n  g.Speed = GPIO_SPEED_FREQ_LOW;\n  HAL_GPIO_Init(GPIOB, &g);\n}\n\nvoid LED_Toggle(void) {\n  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);\n}\n```\n\n`HAL_Delay` 依赖 SysTick，仅适合粗略延时；精确定时与 PWM 请用硬件定时器（参见 TIM 与 HAL_TIM 系列）。",
+    "source": "ST HAL 用法概括（引脚需按板卡修改）",
+    "related_ids": ["kb-002", "kb-003", "kb-031"],
+    "prerequisite_ids": ["kb-002"]
+  },
+  {
+    "id": "kb-027",
+    "title": "ESP-IDF：GPIO 与 FreeRTOS 任务示例骨架",
+    "tags": ["ESP32", "ESP-IDF", "GPIO", "代码"],
+    "platform": ["ESP32"],
+    "body": "在 `app_main` 中配置 GPIO 并创建任务的骨架如下（GPIO 编号按开发板原理图修改）：\n\n```c\n#include \"driver/gpio.h\"\n#include \"freertos/FreeRTOS.h\"\n#include \"freertos/task.h\"\n\n#define LED_GPIO GPIO_NUM_2\n\nstatic void blink_task(void *arg) {\n  while (1) {\n    gpio_set_level(LED_GPIO, 1);\n    vTaskDelay(pdMS_TO_TICKS(500));\n    gpio_set_level(LED_GPIO, 0);\n    vTaskDelay(pdMS_TO_TICKS(500));\n  }\n}\n\nvoid app_main(void) {\n  gpio_reset_pin(LED_GPIO);\n  gpio_set_direction(LED_GPIO, GPIO_MODE_OUTPUT);\n  xTaskCreate(blink_task, \"blink\", 4096, NULL, 5, NULL);\n}\n```\n\n`vTaskDelay` 以 tick 为单位，与 `configTICK_RATE_HZ` 相关；网络与 WiFi 初始化仍建议放在单独任务并参考事件循环模式（见同库 WiFi 条目）。",
+    "source": "乐鑫 ESP-IDF 文档风格示例",
+    "related_ids": ["kb-005", "kb-013", "kb-006"],
+    "prerequisite_ids": ["kb-005"]
+  },
+  {
+    "id": "kb-028",
+    "title": "飞腾 Phytium 处理器与常见软件栈",
+    "tags": ["飞腾", "Phytium", "ARM", "openEuler"],
+    "platform": ["飞腾开发板"],
+    "body": "飞腾信息技术有限公司提供 ARM 架构兼容的处理器产品线，覆盖服务器、桌面与嵌入式等场景（具体型号与指令集级别以官网与数据手册为准）。软件侧常见组合包括 openEuler、商业发行版及厂商 BSP。开发时需明确目标：裸机/RTOS 与「AArch64 + Linux」在工具链、启动流程与调试手段上差异很大；勿将 PC 端 x86 习惯直接套用到交叉编译与运行时路径。",
+    "source": "飞腾公开产品与生态资料（概念摘要）",
+    "related_ids": ["kb-010", "kb-029", "kb-021"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-029",
+    "title": "飞腾开发板：嵌入式 Linux 开发与调试提要",
+    "tags": ["飞腾开发板", "Linux", "设备树", "gdb"],
+    "platform": ["飞腾开发板"],
+    "body": "在 AArch64 板卡上运行 Linux 时的常见流程：宿主机用 aarch64-linux-gnu-gcc 或厂商工具链交叉编译 → 通过 scp/NFS/OTA 部署可执行文件与配置 → 用串口与以太网查看启动日志。用户态调试可用 gdbserver；内核与驱动问题需结合 dmesg、printk 与（若支持）kgdb/JTAG。设备树描述硬件，修改 DTS 后需重新生成 DTB 并由引导加载程序传递。",
+    "source": "嵌入式 Linux 通用实践",
+    "related_ids": ["kb-011", "kb-021", "kb-028"],
+    "prerequisite_ids": ["kb-028"]
+  },
+  {
+    "id": "kb-030",
+    "title": "华为嵌入式路线：芯片、BSP 与 OpenHarmony 分层",
+    "tags": ["华为", "海思", "OpenHarmony", "HDF"],
+    "platform": ["华为开发板"],
+    "body": "华为系硬件开发通常经历：芯片参考设计 → 内核与驱动（含设备树或等价描述）→ 系统服务与框架 → 应用（如 ArkTS Stage 模型）。OpenHarmony 通过 HDF 等机制组织驱动；应用侧通过系统 API 访问能力。与传统 STM32 裸机相比，更多工作发生在系统集成与权限/生命周期管理。API 与驱动模型以华为开发者联盟与 OpenHarmony 当前版本文档为准。",
+    "source": "华为/OpenHarmony 公开文档（概念层）",
+    "related_ids": ["kb-008", "kb-009", "kb-021"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-031",
+    "title": "内存映射与外设寄存器读写要点",
+    "tags": ["寄存器", "MMIO", "volatile"],
+    "platform": ["通用", "STM32", "飞腾开发板"],
+    "body": "外设通过固定物理地址映射到内存空间（MMIO）。C 语言中常用 `volatile` 或厂商头文件中的寄存器指针，避免编译器优化掉对硬件有意义的读/写。位操作多为读-改-写；注意只读、只写、自清除位与写入顺序。大小端、对齐与访问宽度须严格符合参考手册，否则可能导致总线 fault 或静默错误。",
+    "source": "通用 SoC 手册阅读方法",
+    "related_ids": ["kb-025", "kb-019", "kb-026"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-032",
+    "title": "Modbus RTU 在 UART 上的实现要点",
+    "tags": ["Modbus", "UART", "工业"],
+    "platform": ["STM32", "ESP32", "通用"],
+    "body": "Modbus RTU 帧：从站地址、功能码、数据域、CRC16（多项式 0xA001）。帧与帧之间需满足至少 3.5 个字符时间的静默以界定边界，波特率与校验必须与主从一致。固件中常用 UART 接收中断或 DMA + 超时定时器驱动状态机解析。接 RS-485 时注意 DE/RE 方向控制与终端匹配。",
+    "source": "Modbus 公开协议说明",
+    "related_ids": ["kb-016", "kb-004", "kb-017"],
+    "prerequisite_ids": ["kb-016"]
+  },
+  {
+    "id": "kb-033",
+    "title": "本知识库条目关联：related 与 prerequisite 含义",
+    "tags": ["知识关联", "学习路径", "检索"],
+    "platform": ["通用"],
+    "body": "每条记录中的 `related_ids` 表示扩展阅读或并列主题；`prerequisite_ids` 表示理解本条目前建议先掌握的内容。检索命中后，程序可据此展开 Mermaid 子图：实线表示关联，虚线表示前置。这是面向学习的轻量「知识关联」，便于把分散概念连成路径；维护时为新条目填写合理的 id 引用即可增强导航，无需图数据库。",
+    "source": "本项目 embedded_kb.json 数据约定",
+    "related_ids": ["kb-024", "kb-025"],
     "prerequisite_ids": []
   }
 ]
