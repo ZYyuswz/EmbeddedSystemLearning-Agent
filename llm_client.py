@@ -53,6 +53,32 @@ def has_deepseek_key() -> bool:
     return bool(os.environ.get("DEEPSEEK_API_KEY", "").strip())
 
 
+def _deepseek_skip_temperature(model: str) -> bool:
+    """deepseek-reasoner 等模型若携带 temperature 可能返回 400（官方社区与文档常见说明）。"""
+    m = (model or "").lower()
+    return "reasoner" in m
+
+
+def _chat_body_temperature(provider: str, model: str) -> dict[str, Any]:
+    if provider == "deepseek" and _deepseek_skip_temperature(model):
+        return {}
+    return {"temperature": 0.3}
+
+
+def _http_error_snippet(response: httpx.Response) -> str:
+    """尽量读出 4xx/5xx 响应体（含流式请求失败时），便于排查。"""
+    try:
+        t = response.text
+        if t and t.strip():
+            return t.strip()[:800]
+    except Exception:
+        pass
+    try:
+        return response.read().decode("utf-8", errors="replace").strip()[:800]
+    except Exception:
+        return ""
+
+
 def chat_completion(
     provider: str,
     model: str,
@@ -75,7 +101,7 @@ def chat_completion(
         raise ValueError(f"未知 provider: {provider}")
 
     headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
-    body: dict[str, Any] = {"model": model, "messages": messages, "temperature": 0.3}
+    body: dict[str, Any] = {"model": model, "messages": messages, **_chat_body_temperature(provider, model)}
     if max_tokens is not None:
         body["max_tokens"] = max_tokens
 
@@ -84,7 +110,7 @@ def chat_completion(
         try:
             r.raise_for_status()
         except httpx.HTTPStatusError as e:
-            detail = r.text[:500] if r.text else str(e)
+            detail = _http_error_snippet(r) or str(e)
             raise RuntimeError(f"LLM HTTP {r.status_code}: {detail}") from e
         data = r.json()
     try:
@@ -150,8 +176,8 @@ def chat_completion_stream(
     body: dict[str, Any] = {
         "model": model,
         "messages": messages,
-        "temperature": 0.3,
         "stream": True,
+        **_chat_body_temperature(provider, model),
     }
     if max_tokens is not None:
         body["max_tokens"] = max_tokens
@@ -162,10 +188,7 @@ def chat_completion_stream(
             try:
                 r.raise_for_status()
             except httpx.HTTPStatusError as e:
-                try:
-                    detail = (e.response.text or "")[:500]
-                except Exception:
-                    detail = str(e)
+                detail = _http_error_snippet(e.response) or str(e)
                 raise RuntimeError(f"LLM HTTP {e.response.status_code}: {detail}") from e
             for raw in r.iter_lines():
                 if not raw:

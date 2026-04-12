@@ -24,6 +24,8 @@ load_secrets()
 PLATFORMS = ["全部", "STM32", "ESP32", "华为开发板", "飞腾开发板"]
 PROVIDERS = ["通义千问", "DeepSeek"]
 DEFAULT_MODELS = {"通义千问": "qwen-turbo", "DeepSeek": "deepseek-chat"}
+# 侧栏「模型名」按提供方分 key，避免从通义切到 DeepSeek 时仍把 qwen-turbo 发给 DeepSeek（会报 Model Not Exist）
+_LLM_MODEL_STATE_KEY = {"通义千问": "llm_model_input_dashscope", "DeepSeek": "llm_model_input_deepseek"}
 
 _SAMPLE_QUESTIONS = [
     "STM32 里 NVIC 中断优先级如何分组？",
@@ -268,13 +270,17 @@ def main(is_admin: bool, usname: str) -> None:
         platform = st.selectbox("开发板 / 平台侧重", PLATFORMS, index=0)
         provider_label = st.selectbox("大模型提供方", PROVIDERS, index=0)
         default_m = DEFAULT_MODELS[provider_label]
+        model_widget_key = _LLM_MODEL_STATE_KEY[provider_label]
+        if model_widget_key not in st.session_state:
+            st.session_state[model_widget_key] = default_m
         model_name = st.text_input(
             "模型名",
-            value=st.session_state.get("llm_model", default_m),
-            key="llm_model_input",
-            help="通义示例：qwen-turbo；DeepSeek 示例：deepseek-chat（以厂商文档为准）。",
+            key=model_widget_key,
+            help=(
+                "须与所选提供方一致：通义示例 qwen-turbo；DeepSeek 须填 deepseek-chat 或 deepseek-reasoner（以控制台文档为准）。"
+                " 切换提供方后此处会分别记忆，勿混用。"
+            ),
         )
-        st.session_state["llm_model"] = model_name
 
         if not _key_ok(provider_label):
             with st.expander("API Key 未配置", expanded=False):
