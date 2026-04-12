@@ -1,4 +1,4 @@
-# 嵌入式系统学习 AGENT（Streamlit 主程序）依赖
+# Embedded learning agent (Streamlit) dependencies
 httpx>=0.27.0
 numpy>=1.24.0,<2.2.0
 pyahocorasick>=2.1.0
