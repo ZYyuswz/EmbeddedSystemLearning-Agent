@@ -1,3 +1,5 @@
+import os
+
 import streamlit as st
 from user_data_storage import credentials, write_credentials, storage_file, Credentials
 from webui import main
@@ -9,8 +11,9 @@ if 'admin' not in st.session_state:
 if 'usname' not in st.session_state:
     st.session_state.usname = ""
 def login_page():
+    """渲染登录页并设置登录态。"""
     with st.form("login_form"):
-        st.title("登录")
+        st.title("嵌入式学习助手 · 登录")
         username = st.text_input("用户名", value="")
         password = st.text_input("密码", value="", type="password")
         submit = st.form_submit_button("登录")
@@ -22,13 +25,15 @@ def login_page():
                 st.session_state.logged_in = True
                 st.session_state.admin = user_cred.is_admin
                 st.session_state.usname = username
-                st.experimental_rerun()
+                st.session_state.board_api_token = os.getenv("BOARD_ASSISTANT_API_TOKEN", "dev-token")
+                st.rerun()
             else:
                 st.error("用户名或密码错误，请重新输入。")
 
 def register_page():
+    """渲染注册页并写入本地账号数据。"""
     with st.form("register_form"):
-        st.title("注册")
+        st.title("嵌入式学习助手 · 注册")
         new_username = st.text_input("设置用户名", value="")
         new_password = st.text_input("设置密码", value="", type="password")
         is_admin = False
@@ -42,12 +47,12 @@ def register_page():
                 credentials[new_username] = new_user
                 write_credentials(storage_file, credentials)
                 st.success(f"用户 {new_username} 注册成功！请登录。")
-                st.experimental_rerun()
+                st.rerun()
 
 if __name__ == "__main__":
     if not st.session_state.logged_in:
         # 显示注册和登录选项
-        st.sidebar.title("导航")
+        st.sidebar.title("嵌入式学习 AGENT")
         app_mode = st.sidebar.selectbox("选择操作", ["登录", "注册"])
         if app_mode == "登录":
             login_page()

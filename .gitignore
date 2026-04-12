@@ -1,4 +1,39 @@
-neo4j-community-5.18.1/
-model/chinese-roberta-wwm-ext/
-model/best_roberta_rnn_model_ent_aug.pt
+# Python cache and build artifacts
 __pycache__/
+*.py[cod]
+*.pyd
+*.so
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Local virtual environments
+.venv/
+venv/
+env/
+
+# Frontend dependency/build artifacts
+node_modules/
+frontend/node_modules/
+frontend/dist/
+.next/
+
+# OS/editor files
+.DS_Store
+.idea/
+.vscode/
+
+# Runtime-generated local data
+data/board_assistant.db
+data/workspaces/
+tmp_data/*.log
+
+# Secrets and local env files
+config/secrets.env
+secrets.env
+.env
+.env.local
+.env.*.local

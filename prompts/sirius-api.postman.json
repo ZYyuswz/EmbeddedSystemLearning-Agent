@@ -1,0 +1,139 @@
+{
+  "info": {
+    "name": "sirius-api",
+    "_postman_id": "d8ac7f57-9e0a-4eb2-b02d-7e9783021d18",
+    "description": "板卡助手 API 集合",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key": "baseUrl", "value": "http://127.0.0.1:8000"},
+    {"key": "token", "value": "dev-token"},
+    {"key": "projectId", "value": ""},
+    {"key": "taskId", "value": ""},
+    {"key": "evaluationTaskId", "value": ""},
+    {"key": "detectRequestId", "value": ""},
+    {"key": "flashPlanId", "value": ""}
+  ],
+  "item": [
+    {
+      "name": "Board Detect",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{token}}"},
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "url": "{{baseUrl}}/api/v1/boards/detect",
+        "body": {"mode": "raw", "raw": "{\n  \"userProvidedModel\": \"STM32F103C8T6-BluePill\",\n  \"scanPorts\": true,\n  \"scanUsb\": true\n}"}
+      }
+    },
+    {
+      "name": "Board Identify",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{token}}"},
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "url": "{{baseUrl}}/api/v1/boards/identify",
+        "body": {"mode": "raw", "raw": "{\n  \"requestId\": \"{{detectRequestId}}\",\n  \"userProvidedModel\": \"stm32\",\n  \"manualCandidateModel\": \"STM32F103C8T6-BluePill\"\n}"}
+      }
+    },
+    {
+      "name": "Knowledge Sync",
+      "description": "支持 sourcePolicy 与缓存命中信息。",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{token}}"},
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "url": "{{baseUrl}}/api/v1/boards/knowledge/sync",
+        "body": {"mode": "raw", "raw": "{\n  \"boardModel\": \"STM32F103C8T6-BluePill\",\n  \"vendorHint\": \"ST\",\n  \"forceRefresh\": false,\n  \"sourcePolicy\": {\n    \"allowApi\": true,\n    \"allowWeb\": true,\n    \"allowPdfIndex\": true\n  }\n}"}
+      }
+    },
+    {
+      "name": "Generate Project",
+      "description": "支持模板化生成字段 framework/toolchain/templateOptions。",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{token}}"},
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "url": "{{baseUrl}}/api/v1/projects/generate",
+        "body": {"mode": "raw", "raw": "{\n  \"boardModel\": \"STM32F103C8T6-BluePill\",\n  \"knowledgeId\": \"kb_xxx\",\n  \"requirementText\": \"每秒读取温湿度并通过串口输出\",\n  \"language\": \"c\",\n  \"frameworkPreference\": \"auto\",\n  \"framework\": \"baremetal\",\n  \"toolchain\": \"make\",\n  \"templateOptions\": {}\n}"}
+      }
+    },
+    {
+      "name": "Plan Flash",
+      "description": "生成可审计烧录命令计划。",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{token}}"},
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "url": "{{baseUrl}}/api/v1/projects/{{projectId}}/flash/plan",
+        "body": {"mode": "raw", "raw": "{\n  \"preferredTool\": \"stlink\",\n  \"artifactPath\": \"build/firmware.bin\",\n  \"port\": \"/dev/tty.usbmodem1101\",\n  \"baudrate\": 115200,\n  \"eraseMode\": \"chip\"\n}"}
+      }
+    },
+    {
+      "name": "Flash Project",
+      "description": "优先传入 flashPlanId 执行规划后的命令。",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{token}}"},
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "url": "{{baseUrl}}/api/v1/projects/{{projectId}}/flash",
+        "body": {"mode": "raw", "raw": "{\n  \"port\": \"/dev/tty.usbmodem1101\",\n  \"programmer\": \"stlink\",\n  \"eraseMode\": \"chip\",\n  \"dryRun\": true,\n  \"userConfirmedRisk\": true,\n  \"flashPlanId\": \"{{flashPlanId}}\"\n}"}
+      }
+    },
+    {
+      "name": "Run Check",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{token}}"},
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "url": "{{baseUrl}}/api/v1/projects/{{projectId}}/run-check",
+        "body": {"mode": "raw", "raw": "{\n  \"checkProfile\": \"serial_keyword_assert\",\n  \"timeoutSec\": 20,\n  \"serial_keyword_assert\": true,\n  \"serialConfig\": {\n    \"port\": \"/dev/tty.usbmodem1101\",\n    \"baudrate\": 115200,\n    \"bytesize\": 8,\n    \"parity\": \"N\",\n    \"stopbits\": 1,\n    \"writeTimeoutSec\": 1.0\n  },\n  \"probeCommand\": \"status\\n\",\n  \"expectKeywords\": [\"heartbeat\", \"ready\"],\n  \"assertMode\": \"any\"\n}"}
+      }
+    },
+    {
+      "name": "Task Detail",
+      "request": {
+        "method": "GET",
+        "header": [{"key": "Authorization", "value": "Bearer {{token}}"}],
+        "url": "{{baseUrl}}/api/v1/tasks/{{taskId}}"
+      }
+    },
+    {
+      "name": "Run Evaluation",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{token}}"},
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "url": "{{baseUrl}}/api/v1/evaluations/prototype/run",
+        "body": {"mode": "raw", "raw": "{\n  \"projectId\": \"{{projectId}}\",\n  \"boardPlatform\": \"other\",\n  \"scenarioName\": \"sensor_monitor_demo\",\n  \"acceptanceChecklist\": [\"boot_ok\", \"data_output_ok\"]\n}"}
+      }
+    },
+    {
+      "name": "Generate Evaluation Report",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Authorization", "value": "Bearer {{token}}"},
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "url": "{{baseUrl}}/api/v1/evaluations/reports/generate",
+        "body": {"mode": "raw", "raw": "{\n  \"evaluationTaskId\": \"{{evaluationTaskId}}\",\n  \"includeImprovementProposal\": true\n}"}
+      }
+    }
+  ]
+}
