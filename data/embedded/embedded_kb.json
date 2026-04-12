@@ -1,0 +1,242 @@
+[
+  {
+    "id": "kb-001",
+    "title": "STM32 NVIC 与中断优先级",
+    "tags": ["NVIC", "中断", "Cortex-M", "抢占优先级"],
+    "platform": ["STM32", "通用"],
+    "body": "NVIC（Nested Vectored Interrupt Controller）负责 Cortex-M 内核的中断仲裁。STM32 使用分组（AIRCR 的 PRIGROUP）把优先级拆成抢占优先级与子优先级：数值越小抢占优先级越高。同一抢占级内子优先级只影响挂起顺序。配置 EXTI、定时器、UART 中断前需在 NVIC 中使能对应 IRQ 并设置优先级。",
+    "source": "ARM Cortex-M / ST 参考手册（公开概念）",
+    "related_ids": ["kb-002", "kb-003"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-002",
+    "title": "STM32 HAL 与外设初始化流程",
+    "tags": ["HAL", "CubeMX", "时钟", "GPIO"],
+    "platform": ["STM32"],
+    "body": "典型流程：SystemClock_Config 配 RCC → HAL_Init → MX_GPIO_Init / MX_USARTx_UART_Init 等。HAL 库以 __HAL_RCC_ 宏打开外设时钟，再配置 GPIO 复用功能（AF）与 UART 参数。调试时确认 HSE/HSI 与 PLL 倍频与板载晶振一致，否则串口波特率会漂移。",
+    "source": "ST HAL 文档（概念）",
+    "related_ids": ["kb-001", "kb-004"],
+    "prerequisite_ids": ["kb-001"]
+  },
+  {
+    "id": "kb-003",
+    "title": "STM32 EXTI 与按键中断消抖",
+    "tags": ["EXTI", "GPIO", "消抖"],
+    "platform": ["STM32"],
+    "body": "EXTI 可配置上升沿/下降沿触发。机械按键建议硬件 RC 或软件定时器消抖；ISR 内只做置标志位，耗时逻辑放主循环或 RTOS 任务，避免阻塞其他中断。",
+    "source": "通用实践",
+    "related_ids": ["kb-001"],
+    "prerequisite_ids": ["kb-002"]
+  },
+  {
+    "id": "kb-004",
+    "title": "STM32 UART 与 DMA 环形缓冲",
+    "tags": ["UART", "DMA", "环形缓冲"],
+    "platform": ["STM32"],
+    "body": "高吞吐接收可用 UART IDLE 中断 + DMA 双缓冲或环形写指针。注意 DMA 半传输/全传输与 IDLE 的组合，避免覆盖未读数据。发送可用 DMA 正常模式或乒乓缓冲。",
+    "source": "通用实践",
+    "related_ids": ["kb-002"],
+    "prerequisite_ids": ["kb-002"]
+  },
+  {
+    "id": "kb-005",
+    "title": "ESP32 启动与 IDF 开发环境",
+    "tags": ["ESP32", "ESP-IDF", "工具链"],
+    "platform": ["ESP32"],
+    "body": "乐鑫 ESP-IDF 基于 CMake：idf.py set-target esp32s3、build、flash、monitor。分区表与 flash 大小需与硬件一致。WiFi/BT 协议栈占用 RAM 较大，注意任务栈与堆配置。",
+    "source": "乐鑫公开文档（概念）",
+    "related_ids": ["kb-006", "kb-007"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-006",
+    "title": "ESP32 WiFi  station 模式要点",
+    "tags": ["WiFi", "TCP", "事件循环"],
+    "platform": ["ESP32"],
+    "body": "初始化 NVS → 注册事件回调 → esp_wifi_init/start/connect。网络事件在默认事件循环中分发，避免在回调里阻塞。断线重连可监听 WIFI_EVENT_STA_DISCONNECTED。",
+    "source": "乐鑫公开文档（概念）",
+    "related_ids": ["kb-005"],
+    "prerequisite_ids": ["kb-005"]
+  },
+  {
+    "id": "kb-007",
+    "title": "ESP32 低功耗与 light sleep",
+    "tags": ["低功耗", "睡眠", "唤醒"],
+    "platform": ["ESP32"],
+    "body": "modem sleep/light sleep/deep sleep 逐级更省但唤醒代价不同。GPIO 唤醒需配置 ext0/ext1。深睡后 RAM 丢失，仅 RTC 慢存可保留少量数据。",
+    "source": "乐鑫公开文档（概念）",
+    "related_ids": ["kb-005"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-008",
+    "title": "华为开发板与 OpenHarmony 应用开发概览",
+    "tags": ["OpenHarmony", "鸿蒙", "ArkTS", "DevEco"],
+    "platform": ["华为开发板"],
+    "body": "面向 OpenHarmony 的开发通常在 DevEco Studio 中创建 Stage 模型应用：Ability、页面路由、权限声明。硬件侧通过 HDF 驱动框架与内核交互；学习路径建议先掌握组件生命周期与分布式软总线概念，再深入驱动。具体 API 以华为开发者文档为准。",
+    "source": "华为开发者公开资料（概念）",
+    "related_ids": ["kb-009"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-009",
+    "title": "鸿蒙设备权限与 Ability 生命周期",
+    "tags": ["权限", "Ability", "Stage模型"],
+    "platform": ["华为开发板"],
+    "body": "敏感能力需在 module.json5 声明并运行时申请。UIAbility 的 onCreate/onForeground/onBackground 对应前后台切换；资源释放宜在 onDestroy。与裸机 STM32 不同，多任务由系统调度。",
+    "source": "公开概念整理",
+    "related_ids": ["kb-008"],
+    "prerequisite_ids": ["kb-008"]
+  },
+  {
+    "id": "kb-010",
+    "title": "沸腾开发板学习与通用外设路线",
+    "tags": ["沸腾开发板", "GPIO", "实验"],
+    "platform": ["沸腾开发板"],
+    "body": "以板卡官方说明书为准：先跑通 LED/按键与串口打印，再学时钟与定时器。若板卡基于国产 SoC，交叉编译链与镜像烧录工具以厂商提供为准；通用技能（Makefile/CMake、串口调试、逻辑分析仪）可迁移。",
+    "source": "通用学习路径（具体引脚见板卡手册）",
+    "related_ids": ["kb-011", "kb-012"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-011",
+    "title": "交叉编译与 gdbserver 远程调试",
+    "tags": ["GCC", "gdb", "OpenOCD"],
+    "platform": ["通用", "STM32", "沸腾开发板"],
+    "body": "host 上 arm-none-eabi-gcc 生成 elf；OpenOCD + ST-Link/J-Link 提供 gdb 端口，target remote :3333。确认 -mcpu/-mthumb 与芯片一致。strip 调试符号可减小固件体积。",
+    "source": "通用工具链",
+    "related_ids": ["kb-010"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-012",
+    "title": "看门狗 IWDG 与窗口看门狗",
+    "tags": ["看门狗", "复位", "可靠性"],
+    "platform": ["STM32", "通用"],
+    "body": "独立看门狗基于 LSI，一旦启动需周期性喂狗否则复位。窗口看门狗在计数窗口内喂狗才合法，可检测跑飞与误喂。ISR 与主循环喂狗策略要一致，避免临界区过长导致误复位。",
+    "source": "ST 参考手册（概念）",
+    "related_ids": ["kb-001"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-013",
+    "title": "FreeRTOS 任务与优先级",
+    "tags": ["FreeRTOS", "RTOS", "任务"],
+    "platform": ["通用", "STM32", "ESP32"],
+    "body": "任务函数应为无限循环，阻塞调用让出 CPU。优先级数字越大越优先（以 FreeRTOSConfig.h 为准）。避免在多个任务中无锁共享非原子变量；临界区用 taskENTER_CRITICAL 或互斥量。",
+    "source": "FreeRTOS 文档（概念）",
+    "related_ids": ["kb-014", "kb-015"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-014",
+    "title": "信号量与互斥量使用场景",
+    "tags": ["信号量", "互斥量", "同步"],
+    "platform": ["通用"],
+    "body": "二值信号量适合任务同步；计数信号量适合资源池。互斥量带优先级继承，适合保护共享资源。ISR 中仅使用 FromISR 后缀 API。",
+    "source": "FreeRTOS 文档（概念）",
+    "related_ids": ["kb-013"],
+    "prerequisite_ids": ["kb-013"]
+  },
+  {
+    "id": "kb-015",
+    "title": "优先级反转与栈溢出检测",
+    "tags": ["优先级反转", "栈", "调试"],
+    "platform": ["通用"],
+    "body": "中等优先级任务可能阻塞高优先级等待低优先级释放互斥量——用互斥量继承或调整优先级设计规避。开启 configCHECK_FOR_STACK_OVERFLOW 可在溢出时钩子函数里记录现场。",
+    "source": "RTOS 通用教材",
+    "related_ids": ["kb-013"],
+    "prerequisite_ids": ["kb-013"]
+  },
+  {
+    "id": "kb-016",
+    "title": "SPI 与 I2C 选型对比",
+    "tags": ["SPI", "I2C", "总线"],
+    "platform": ["通用"],
+    "body": "SPI 全双工、线多、速率高，适合 Flash/屏；I2C 两线+地、多从机地址，适合传感器 EEPROM。注意 I2C 上拉电阻与总线电容对最大速率限制。",
+    "source": "通用概念",
+    "related_ids": ["kb-017"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-017",
+    "title": "CAN 总线与帧类型简介",
+    "tags": ["CAN", "总线", "嵌入式"],
+    "platform": ["STM32", "通用"],
+    "body": "标准帧/扩展帧、波特率由分频与时间量子配置。过滤器可硬件屏蔽无关 ID。布线需终端电阻 120Ω 抑制反射。",
+    "source": "通用概念",
+    "related_ids": ["kb-016"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-018",
+    "title": "ADC 采样与参考电压",
+    "tags": ["ADC", "采样", "精度"],
+    "platform": ["通用", "STM32"],
+    "body": "采样时间与输入阻抗影响精度；多通道扫描可用 DMA。VDDA 噪声会直接影响读数，模拟部分布局与去耦很重要。",
+    "source": "通用概念",
+    "related_ids": [],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-019",
+    "title": "启动文件与链接脚本中的内存布局",
+    "tags": ["启动文件", "链接脚本", "Flash", "RAM"],
+    "platform": ["通用", "STM32"],
+    "body": "startup_xxx.s 定义向量表与 Reset_Handler，复制 data 段、清零 bss、调 SystemInit 与 main。ld 脚本定义 FLASH/RAM 区域与段放置；堆栈大小需大于最坏调用深度与 RTOS 任务栈之和。",
+    "source": "GNU ld / CMSIS（概念）",
+    "related_ids": ["kb-011"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-020",
+    "title": "ESP32 蓝牙 BLE GATT 概念",
+    "tags": ["BLE", "GATT", "蓝牙"],
+    "platform": ["ESP32"],
+    "body": "GATT 由 Service/Characteristic/Descriptor 组成。notify/indicate 用于上行数据。连接间隔与 MTU 影响吞吐与功耗。",
+    "source": "乐鑫公开文档（概念）",
+    "related_ids": ["kb-005"],
+    "prerequisite_ids": ["kb-005"]
+  },
+  {
+    "id": "kb-021",
+    "title": "嵌入式 Linux 设备树（DTS）入门",
+    "tags": ["设备树", "Linux", "驱动"],
+    "platform": ["华为开发板", "通用"],
+    "body": "设备树描述硬件资源，内核驱动通过 compatible 匹配 probe。学习路径：读懂 reg/interrupts/status 属性，再对照驱动中的 of_property_read 调用。",
+    "source": "内核文档（概念）",
+    "related_ids": ["kb-008"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-022",
+    "title": "排错思路：从现象到根因",
+    "tags": ["调试", "示波器", "逻辑分析仪"],
+    "platform": ["通用"],
+    "body": "先确认供电与时钟、再看复位向量与串口日志；硬件用万用表/示波器看波形，软件用断言与分段注释缩小范围。HardFault 时读取 CFSR/BFAR 辅助定位。",
+    "source": "工程经验总结",
+    "related_ids": ["kb-011"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-023",
+    "title": "PWM 与定时器输出比较模式",
+    "tags": ["PWM", "定时器", "占空比"],
+    "platform": ["STM32", "ESP32"],
+    "body": "通过 ARR 决定频率，CCR 决定占空比。互补 PWM 与死区用于电机驱动。注意 GPIO 复用到 TIM 通道的 AF 映射表。",
+    "source": "通用概念",
+    "related_ids": ["kb-002"],
+    "prerequisite_ids": []
+  },
+  {
+    "id": "kb-024",
+    "title": "学习路径：裸机 → RTOS → 网络",
+    "tags": ["学习路径", "RTOS", "网络"],
+    "platform": ["通用"],
+    "body": "建议顺序：GPIO/中断/定时器 → UART/SPI 驱动传感器 → 引入 FreeRTOS 做多任务 → 再学 WiFi/Ethernet 与协议栈。每阶段用一个小项目闭环验证。",
+    "source": "课程化整理",
+    "related_ids": ["kb-013", "kb-005"],
+    "prerequisite_ids": []
+  }
+]
