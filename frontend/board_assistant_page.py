@@ -16,9 +16,17 @@ def render_board_assistant_page(client: BackendApiClient) -> None:
 
     with st.expander("1) 板卡识别", expanded=True):
         user_model = st.text_input("可选：手动输入板卡型号", value=state.get("user_model", ""))
+        scan_ports = st.checkbox("扫描串口设备", value=True, key="detect_scan_ports")
+        scan_usb = st.checkbox("扫描 USB 设备", value=True, key="detect_scan_usb")
         if st.button("识别板卡", key="detect_board"):
             try:
-                data = client.detect_board({"userProvidedModel": user_model or None, "scanPorts": True, "scanUsb": True})
+                data = client.detect_board(
+                    {
+                        "userProvidedModel": user_model or None,
+                        "scanPorts": bool(scan_ports),
+                        "scanUsb": bool(scan_usb),
+                    }
+                )
                 state["detect_result"] = data
                 state["boardDetectState"] = "success"
                 state["detect_confirmed_request_id"] = ""
@@ -29,6 +37,7 @@ def render_board_assistant_page(client: BackendApiClient) -> None:
         detect_result = state.get("detect_result") or {}
         if detect_result:
             st.json(detect_result)
+            _render_scan_result(detect_result)
             if detect_result.get("needConfirm"):
                 st.warning("识别置信度较低，请选择候选后执行二次识别确认。")
                 candidates = detect_result.get("candidates", [])
@@ -240,3 +249,31 @@ def _init_state(state: st.session_state) -> None:
     for key, value in defaults.items():
         if key not in state:
             state[key] = value
+
+
+def _render_scan_result(detect_result: dict[str, object]) -> None:
+    """渲染真实设备扫描结果。"""
+    probe_info = detect_result.get("probeInfo") if isinstance(detect_result, dict) else None
+    if not isinstance(probe_info, dict):
+        return
+
+    serial_ports = probe_info.get("serialPorts") or []
+    serial_details = probe_info.get("serialPortDetails") or []
+    usb_devices = probe_info.get("usbDevices") or []
+
+    with st.container(border=True):
+        st.markdown("**真实设备扫描结果**")
+        if serial_ports:
+            st.write("串口设备：", ", ".join(str(item) for item in serial_ports))
+        else:
+            st.write("串口设备：未发现")
+
+        if serial_details:
+            st.caption("串口枚举明细")
+            st.dataframe(serial_details, use_container_width=True)
+
+        if usb_devices:
+            st.caption("USB 枚举明细")
+            st.dataframe(usb_devices, use_container_width=True)
+        else:
+            st.write("USB 设备：未发现")

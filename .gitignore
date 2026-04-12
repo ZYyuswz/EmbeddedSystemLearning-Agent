@@ -30,6 +30,7 @@ frontend/dist/
 data/board_assistant.db
 data/workspaces/
 tmp_data/*.log
+tmp_data/*.pid
 
 # Secrets and local env files
 config/secrets.env
