@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import os
 import re
+from collections.abc import Iterator
 from typing import Any
 
 import httpx
@@ -90,6 +91,89 @@ def chat_completion(
         return data["choices"][0]["message"]["content"].strip()
     except (KeyError, IndexError, TypeError) as e:
         raise RuntimeError(f"LLM 响应结构异常: {json.dumps(data, ensure_ascii=False)[:800]}") from e
+
+
+def _openai_compatible_stream_chunks(line: str) -> list[str]:
+    """解析 SSE 单行 `data: {...}`，返回本轮 delta 中的文本片段（可能为空）。"""
+    line = line.strip()
+    if not line.startswith("data:"):
+        return []
+    payload = line[5:].strip()
+    if payload == "[DONE]":
+        return []
+    try:
+        data = json.loads(payload)
+    except json.JSONDecodeError:
+        return []
+    choices = data.get("choices")
+    if not isinstance(choices, list) or not choices:
+        return []
+    delta = choices[0].get("delta") if isinstance(choices[0], dict) else None
+    if not isinstance(delta, dict):
+        return []
+    out: list[str] = []
+    piece = delta.get("content")
+    if isinstance(piece, str) and piece:
+        out.append(piece)
+    # 少数兼容实现把整段放在 message.content
+    msg = delta.get("message")
+    if isinstance(msg, dict):
+        c = msg.get("content")
+        if isinstance(c, str) and c:
+            out.append(c)
+    return out
+
+
+def chat_completion_stream(
+    provider: str,
+    model: str,
+    messages: list[dict[str, str]],
+    *,
+    timeout: float = 120.0,
+    max_tokens: int | None = None,
+) -> Iterator[str]:
+    """OpenAI 兼容 SSE 流式补全，按片段 yield 文本（通义兼容模式 / DeepSeek）。"""
+    if provider == "dashscope":
+        if not has_dashscope_key():
+            raise RuntimeError("未配置 DASHSCOPE_API_KEY")
+        url = os.environ.get("DASHSCOPE_BASE_URL", DEFAULT_DASHSCOPE_URL).strip() or DEFAULT_DASHSCOPE_URL
+        key = os.environ.get("DASHSCOPE_API_KEY", "").strip()
+    elif provider == "deepseek":
+        if not has_deepseek_key():
+            raise RuntimeError("未配置 DEEPSEEK_API_KEY")
+        url = os.environ.get("DEEPSEEK_BASE_URL", DEFAULT_DEEPSEEK_URL).strip() or DEFAULT_DEEPSEEK_URL
+        key = os.environ.get("DEEPSEEK_API_KEY", "").strip()
+    else:
+        raise ValueError(f"未知 provider: {provider}")
+
+    headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+    body: dict[str, Any] = {
+        "model": model,
+        "messages": messages,
+        "temperature": 0.3,
+        "stream": True,
+    }
+    if max_tokens is not None:
+        body["max_tokens"] = max_tokens
+
+    t = httpx.Timeout(timeout, read=timeout)
+    with httpx.Client(timeout=t) as client:
+        with client.stream("POST", url, headers=headers, json=body) as r:
+            try:
+                r.raise_for_status()
+            except httpx.HTTPStatusError as e:
+                try:
+                    detail = (e.response.text or "")[:500]
+                except Exception:
+                    detail = str(e)
+                raise RuntimeError(f"LLM HTTP {e.response.status_code}: {detail}") from e
+            for raw in r.iter_lines():
+                if not raw:
+                    continue
+                if isinstance(raw, bytes):
+                    raw = raw.decode("utf-8")
+                for frag in _openai_compatible_stream_chunks(raw):
+                    yield frag
 
 
 def fallback_intent(query: str) -> str:
