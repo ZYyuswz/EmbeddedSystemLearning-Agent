@@ -32,15 +32,6 @@ data/workspaces/
 tmp_data/*.log
 tmp_data/*.pid
 
-# Reference books / large binary assets (放 data/references/ 但不提交)
-data/references/*.pdf
-data/references/*.epub
-data/references/*.djvu
-data/references/*.mobi
-data/references/*.chm
-data/references/*.zip
-data/references/*.rar
-
 # Secrets and local env files
 config/secrets.env
 secrets.env
