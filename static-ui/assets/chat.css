@@ -191,8 +191,8 @@
 }
 
 .msg-row.user .msg-bubble {
-  background: #dfe8ec;
-  border-color: rgba(61, 90, 102, 0.2);
+  background: #e3f0fb;
+  border-color: rgba(90, 155, 212, 0.3);
 }
 
 .msg-row.assistant .msg-bubble {

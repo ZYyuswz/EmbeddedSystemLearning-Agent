@@ -1,12 +1,10 @@
-# 嵌入式学习 AGENT — 简洁浅色主题（低饱和、无渐变）
-# 与 docs/项目修改文档.md 一致
-
+# 嵌入式学习助手 — 简洁浅色主题（淡蓝 + 淡绿主基调，无渐变、无红色）
 [theme]
 base = "light"
-primaryColor = "#3d5a66"
-backgroundColor = "#f4f5f7"
-secondaryBackgroundColor = "#eef0f3"
-textColor = "#1a202c"
+primaryColor = "#5a9bd4"
+backgroundColor = "#f4f9fa"
+secondaryBackgroundColor = "#e9f2f3"
+textColor = "#1f2a33"
 font = "sans serif"
 
 [client]

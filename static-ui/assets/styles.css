@@ -1,14 +1,15 @@
 /* 嵌入式学习 AGENT — 静态 UI 示意（与 docs/项目修改文档 原则一致：低饱和、无渐变） */
 
 :root {
-  --primary: #3d5a66;
-  --primary-hover: #324a54;
-  --bg: #f4f5f7;
+  --primary: #5a9bd4;
+  --primary-hover: #4a89c2;
+  --accent: #6abf9b;
+  --bg: #f4f9fa;
   --bg-card: #ffffff;
-  --sidebar: #eef0f3;
-  --border: rgba(61, 90, 102, 0.14);
-  --text: #1a202c;
-  --text-muted: #5a6578;
+  --sidebar: #e9f2f3;
+  --border: rgba(90, 155, 212, 0.18);
+  --text: #1f2a33;
+  --text-muted: #5d6b76;
   --radius: 8px;
   --font: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
   --sidebar-width: 260px;
